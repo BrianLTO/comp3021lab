@@ -95,7 +95,7 @@ public class NoteBook implements java.io.Serializable{
 			out.writeObject(this);
 			out.close();
 		} catch (Exception e) {
-			return false;
+			e.printStackTrace();
 		}
 		return true;
 	}
