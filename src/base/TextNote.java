@@ -58,4 +58,8 @@ public class TextNote extends Note implements java.io.Serializable{
 		super(f.getName());
 		this.content = getTextFromFile(f.getAbsolutePath());
 	}
+	
+	public void setContent(String content) {
+		this.content = content;
+	}
 }

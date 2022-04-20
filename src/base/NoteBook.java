@@ -1,5 +1,6 @@
 package base;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -15,6 +16,19 @@ public class NoteBook implements java.io.Serializable{
 	private ArrayList<Folder> folders;
 	
 	public NoteBook(String file) {
+		FileInputStream fis = null;
+		ObjectInputStream in = null;
+		try {
+			fis = new FileInputStream(file);
+			in = new ObjectInputStream(fis);
+			this.folders = ((NoteBook) in.readObject()).folders;
+			in.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public NoteBook(File file) {
 		FileInputStream fis = null;
 		ObjectInputStream in = null;
 		try {
@@ -43,6 +57,29 @@ public class NoteBook implements java.io.Serializable{
 		return insertNote(folderName, new ImageNote(title));
 	}
 	
+	/**
+	 * Insert a folder with folderName into ArrayList<Folder> folders
+	 * 
+	 * @return;
+	 * true if successful,
+	 * false if the name is empty or folder already exists
+	 */
+	public boolean createFolder(String folderName) {
+		if (folderName == "") return false;
+		Folder found = null;
+		for (Folder f: folders) {
+			if (f.getName().equals(folderName)) {
+				found = f;
+				break;
+			}
+		}
+		if (found == null) {
+			folders.add(new Folder(folderName));
+			return true;
+		}
+		return false;
+	}
+	
 	public ArrayList<Folder> getFolders() {
 		return folders;
 	}
@@ -51,7 +88,7 @@ public class NoteBook implements java.io.Serializable{
 		
 		Folder found = null;
 		for (Folder f: folders) {
-			if (f.getName() == folderName) found = f;
+			if (f.getName().equals(folderName)) found = f;
 		}
 		
 		if (found == null) {
@@ -60,7 +97,7 @@ public class NoteBook implements java.io.Serializable{
 		}
 		
 		for (Note n: found.getNotes()) {
-			if (n.equals(note)) {
+			if (n.getTitle().equals(note.getTitle())) {
 				System.out.println("Creating note " + note.getTitle()
 			+ " under folder " + folderName + " failed");
 				return false;
@@ -87,6 +124,20 @@ public class NoteBook implements java.io.Serializable{
 	}
 	
 	public boolean save(String file) {
+		FileOutputStream fos = null;
+		ObjectOutputStream out = null;
+		try {
+			fos = new FileOutputStream(file);
+			out = new ObjectOutputStream(fos);
+			out.writeObject(this);
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return true;
+	}
+	
+	public boolean save(File file) {
 		FileOutputStream fos = null;
 		ObjectOutputStream out = null;
 		try {
